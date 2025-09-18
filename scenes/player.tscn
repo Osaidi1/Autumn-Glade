@@ -1,6 +1,7 @@
-[gd_scene load_steps=135 format=3 uid="uid://bwtd6vqtcsd3o"]
+[gd_scene load_steps=136 format=3 uid="uid://bwtd6vqtcsd3o"]
 
 [ext_resource type="Texture2D" uid="uid://camit66t3s13e" path="res://assets/character/attack 1.png" id="1_f1ej7"]
+[ext_resource type="Script" uid="uid://dccfme5yiguyo" path="res://scripts/player.gd" id="1_oprun"]
 [ext_resource type="Texture2D" uid="uid://d11xsvqgi6447" path="res://assets/character/attack 2.png" id="2_oprun"]
 [ext_resource type="Texture2D" uid="uid://c2ogi05dwui6e" path="res://assets/character/attack 3.png" id="3_a8ls1"]
 [ext_resource type="Texture2D" uid="uid://cevdhx0vrm780" path="res://assets/character/block.png" id="4_qfm1y"]
@@ -944,6 +945,8 @@ radius = 5.0
 height = 26.0
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
+script = ExtResource("1_oprun")
+JUMP_VELOCITY = -180.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_b3jfe")

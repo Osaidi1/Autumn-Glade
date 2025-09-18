@@ -10,7 +10,8 @@ config_version=5
 
 [application]
 
-config/name="Bell of Crystalbrook"
+config/name="Glade Autumn"
+run/main_scene="res://scenes/game.tscn"
 config/features=PackedStringArray("4.4", "Forward Plus")
 
 [editor_plugins]

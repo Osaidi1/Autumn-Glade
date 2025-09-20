@@ -1,7 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://1ffj4pyi4mtr"]
+[gd_scene load_steps=5 format=3 uid="uid://1ffj4pyi4mtr"]
 
 [ext_resource type="PackedScene" uid="uid://bmt8wcttu8m2h" path="res://scenes/ground.tscn" id="1_yqjtg"]
 [ext_resource type="PackedScene" uid="uid://bwtd6vqtcsd3o" path="res://scenes/player.tscn" id="2_lnu2h"]
+[ext_resource type="Script" uid="uid://bxp64knk6fkrh" path="res://scripts/danger zone.gd" id="3_lnu2h"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lbhrr"]
+size = Vector2(2721.61, 92.0545)
 
 [node name="Game" type="Node2D"]
 
@@ -9,4 +13,17 @@
 position = Vector2(-25, 0)
 
 [node name="player" parent="." instance=ExtResource("2_lnu2h")]
-position = Vector2(-2, -13)
+position = Vector2(-294, -31)
+
+[node name="danger" type="Area2D" parent="."]
+position = Vector2(-344, -14)
+collision_layer = 0
+monitorable = false
+script = ExtResource("3_lnu2h")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="danger"]
+position = Vector2(239.5, 197.321)
+scale = Vector2(0.730818, 1.0359)
+shape = SubResource("RectangleShape2D_lbhrr")
+
+[connection signal="body_entered" from="danger" to="danger" method="_on_body_entered"]

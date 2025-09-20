@@ -1,9 +1,11 @@
+class_name Player
 extends CharacterBody2D
 
-const walkspeed = 45
-const runspeed = 130
+const walkspeed = 40
+const runspeed = 120
 const JUMP_VELOCITY = -280.0
 const friction = 100
+const health = 100
 var SPEED = 300.0
 var stopping
 var is_moving = false
@@ -11,6 +13,7 @@ var is_jumping = false
 var is_crouching = false
 var jump_available = true
 var only_falling = false
+var can_control = true
 @export var coyote_time = 0.1
 @onready var collision: CollisionShape2D = $Collision
 @onready var animator: AnimatedSprite2D = $AnimatedSprite2D
@@ -18,8 +21,13 @@ var only_falling = false
 var croutchcshape = preload("res://collisions/croutchslide.tres")
 var idlecshape = preload("res://collisions/idle.tres")
 
+func healthset():
+	pass
+
 func _ready():
 	collision.shape = idlecshape
+	collision.position.y = 0
+	visible = true
 
 func walkorrun(SPEED):
 	if Input.is_action_pressed("run"):
@@ -39,8 +47,10 @@ func jump():
 func facing(direction):
 	if direction < 0:
 		animator.flip_h = true
+		collision.position.x = -5
 	if direction > 0:
 		animator.flip_h = false
+		collision.position.x = 0
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("crouch") and !is_jumping:
@@ -51,13 +61,17 @@ func _input(event: InputEvent) -> void:
 
 func crouch():
 	if is_crouching:
-		print("crouch on")
 		collision.shape = croutchcshape
+		collision.position.y = 4.5
 	elif !is_crouching:
-		print("crouch off")
 		collision.shape = idlecshape
+		collision.position.y = 0
 
 func _physics_process(delta: float) -> void:
+	if !can_control: 
+		handle_death()
+		return
+	
 	if is_on_floor():
 		is_jumping = false
 		only_falling = false
@@ -74,7 +88,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		jump_available = true
 		coyotetime.stop()
-		
+	
 	#Handle fall
 	if not is_on_floor() and not Input.is_action_just_pressed("jump") and velocity.y > 0: 
 		only_falling = true
@@ -121,3 +135,9 @@ func play_run_walk_idle_jump_anims():
 
 func coyote_timeout():
 	jump_available = false
+
+func handle_death():
+	velocity.y = 300
+	print("died")
+	animator.play("die")
+	await get_tree().create_timer(1.1).timeout

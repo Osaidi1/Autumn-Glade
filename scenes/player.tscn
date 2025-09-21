@@ -1046,6 +1046,7 @@ script/source = "extends AnimatedSprite2D
 "
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
+collision_layer = 3
 script = ExtResource("1_oprun")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -1082,5 +1083,13 @@ script = ExtResource("6_smehm")
 
 [node name="Timer" type="Timer" parent="HealthBar"]
 
+[node name="Laderchecker" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Laderchecker"]
+
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="coyote time" to="." method="coyote_timeout"]
+[connection signal="body_entered" from="Laderchecker" to="." method="_on_laderchecker_body_entered"]
+[connection signal="body_exited" from="Laderchecker" to="." method="_on_laderchecker_body_exited"]

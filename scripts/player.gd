@@ -9,6 +9,7 @@ const maxhealth = 100
 const minhealth = 0
 var currenthealth : int = 100
 var SPEED = 300.0
+var climb_speed = 200
 var is_dying = false
 var is_moving = false
 var is_jumping = false
@@ -16,6 +17,11 @@ var is_crouching = false
 var jump_available = true
 var only_falling = false
 var can_control = true
+var wants_to_climb = false
+var can_climb = false
+var go_climb = false
+var is_climbing = false
+var vertical_dir
 @export var coyote_time = 0.1
 @onready var health_bar: TextureProgressBar = $HealthBar
 @onready var collision: CollisionShape2D = $Collision
@@ -32,6 +38,20 @@ func _ready():
 	visible = true
 	health_bar.init_health(currenthealth)
 	is_dying = false
+
+func climb_vars():
+	if Input.is_action_pressed("climb up") or Input.is_action_pressed("climb down"):
+		wants_to_climb = true
+	else:
+		wants_to_climb = false
+
+func climb():
+	if wants_to_climb and can_climb:
+		animator.play("climb")
+		go_climb = true
+	if !wants_to_climb and !can_climb:
+		is_climbing = false
+		go_climb = false
 
 func healthset():
 	if currenthealth > maxhealth:
@@ -94,6 +114,9 @@ func _physics_process(delta: float) -> void:
 		handle_death()
 		return
 	
+	#Set Climb Vars
+	climb_vars()
+	
 	#Handle Health Set
 	healthset()
 	
@@ -101,6 +124,7 @@ func _physics_process(delta: float) -> void:
 		is_jumping = false
 		only_falling = false
 	
+	var vertical_dir = Input.get_axis("climb up", "climb down")
 	var direction := Input.get_axis("left", "right")
 	
 	# Add the gravity.
@@ -126,6 +150,15 @@ func _physics_process(delta: float) -> void:
 	
 	#Handle Jump
 	jump()
+	
+	#Handle Climb Itself
+	climb()
+	
+	if go_climb == true:
+		velocity.y = climb_speed * delta * vertical_dir
+		is_climbing = true
+	if is_on_floor():
+		is_climbing = false
 	
 	# Get the input direction and handle the movement/deceleration.
 	if direction:
@@ -169,3 +202,9 @@ func handle_death():
 	if get_tree():
 		get_tree().reload_current_scene()
 	health_bar.visible = false
+
+func _on_laderchecker_body_entered(body: Node2D) -> void:
+	can_climb = true
+
+func _on_laderchecker_body_exited(body: Node2D) -> void:
+	can_climb = false

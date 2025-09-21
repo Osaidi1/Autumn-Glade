@@ -1,11 +1,9 @@
-[gd_scene load_steps=136 format=3 uid="uid://bwtd6vqtcsd3o"]
+[gd_scene load_steps=138 format=3 uid="uid://bwtd6vqtcsd3o"]
 
 [ext_resource type="Script" uid="uid://byyb5gvlr3ma1" path="res://scripts/player.gd" id="1_oprun"]
 [ext_resource type="Texture2D" uid="uid://dvlkao6v72gv2" path="res://assets/character/Character Animations.png" id="2_g2els"]
 [ext_resource type="Shape2D" uid="uid://bgy37jmb1vmey" path="res://collisions/croutchslide.tres" id="3_qhqgy"]
-[ext_resource type="Texture2D" uid="uid://d1g0wug7caf45" path="res://assets/healthbarUnder.png" id="4_tuyoq"]
-[ext_resource type="Texture2D" uid="uid://bonhr0cxgtd5w" path="res://assets/healthbarProgress (1).png" id="5_fjrip"]
-[ext_resource type="Script" uid="uid://sl5nxpcoqsd3" path="res://scripts/health_ui.gd" id="6_smehm"]
+[ext_resource type="Script" uid="uid://sl5nxpcoqsd3" path="res://scripts/health_ui.gd" id="4_dqkch"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qhqgy"]
 atlas = ExtResource("2_g2els")
@@ -1045,13 +1043,29 @@ animations = [{
 script/source = "extends AnimatedSprite2D
 "
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_71aby"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qckcs"]
+bg_color = Color(1, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rsgf8"]
+bg_color = Color(0.169245, 0.169245, 0.169245, 1)
+expand_margin_left = 5.0
+expand_margin_top = 5.0
+expand_margin_right = 5.0
+expand_margin_bottom = 5.0
+shadow_offset = Vector2(0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dt0kf"]
+bg_color = Color(1, 1, 1, 1)
+
 [node name="CharacterBody2D" type="CharacterBody2D"]
 script = ExtResource("1_oprun")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(-3, -2)
 sprite_frames = SubResource("SpriteFrames_b3jfe")
-animation = &"die"
+animation = &"jump"
 autoplay = "idle"
 script = SubResource("GDScript_qlg0r")
 
@@ -1064,23 +1078,34 @@ limit_bottom = 250
 [node name="Collision" type="CollisionShape2D" parent="."]
 shape = ExtResource("3_qhqgy")
 
-[node name="HealthBar" type="TextureProgressBar" parent="."]
-visible = false
+[node name="HealthBar" type="ProgressBar" parent="."]
 z_index = 1
-offset_left = -288.0
-offset_top = 144.0
-offset_right = -224.0
-offset_bottom = 154.0
-scale = Vector2(2.04, 2.04)
-size_flags_horizontal = 0
+offset_left = 113.0
+offset_top = 913.0
+offset_right = 601.0
+offset_bottom = 980.0
+theme_override_styles/background = SubResource("StyleBoxEmpty_71aby")
+theme_override_styles/fill = SubResource("StyleBoxFlat_qckcs")
 value = 60.0
-texture_under = ExtResource("4_tuyoq")
-texture_progress = ExtResource("5_fjrip")
-tint_over = Color(0.806161, 0.631267, 0, 1)
-tint_progress = Color(1, 0.976471, 1, 1)
-script = ExtResource("6_smehm")
+show_percentage = false
+script = ExtResource("4_dqkch")
+
+[node name="DamageBar" type="ProgressBar" parent="HealthBar"]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_rsgf8")
+theme_override_styles/fill = SubResource("StyleBoxFlat_dt0kf")
+value = 80.0
+show_percentage = false
 
 [node name="Timer" type="Timer" parent="HealthBar"]
+wait_time = 0.4
+one_shot = true
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="coyote time" to="." method="coyote_timeout"]

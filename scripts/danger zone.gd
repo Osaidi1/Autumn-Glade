@@ -1,6 +1,7 @@
 extends Area2D
 
-const player = preload("res://scripts/player.gd")
+@onready var player1: Player = $"../player"
+@onready var player: Player = $"../player"
 @onready var timer: Timer = $Timer
 
 #Body has entered area

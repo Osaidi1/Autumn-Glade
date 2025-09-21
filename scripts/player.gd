@@ -5,9 +5,11 @@ const walkspeed = 40
 const runspeed = 120
 const JUMP_VELOCITY = -280.0
 const friction = 100
-const health = 100
+const maxhealth = 100
+const minhealth = 0
+var currenthealth : int = 100
 var SPEED = 300.0
-var stopping
+var is_dying = false
 var is_moving = false
 var is_jumping = false
 var is_crouching = false
@@ -15,19 +17,37 @@ var jump_available = true
 var only_falling = false
 var can_control = true
 @export var coyote_time = 0.1
+@onready var health_bar: TextureProgressBar = $HealthBar
 @onready var collision: CollisionShape2D = $Collision
 @onready var animator: AnimatedSprite2D = $AnimatedSprite2D
 @onready var coyotetime: Timer = $"coyote time"
 var croutchcshape = preload("res://collisions/croutchslide.tres")
 var idlecshape = preload("res://collisions/idle.tres")
 
-func healthset():
-	pass
-
 func _ready():
+	health_bar.visible = true
+	currenthealth = maxhealth
 	collision.shape = idlecshape
 	collision.position.y = 0
 	visible = true
+	health_bar.init_health(currenthealth)
+	is_dying = false
+
+func healthset():
+	if currenthealth > maxhealth:
+		currenthealth = maxhealth
+	if currenthealth < minhealth:
+		currenthealth = minhealth
+
+func change_health(change):
+	currenthealth += change
+	if currenthealth <= 0:
+		currenthealth = 0
+		is_dying = true
+		can_control = false
+		handle_death()
+	
+	health_bar._set_health(currenthealth)
 
 func walkorrun(SPEED):
 	if Input.is_action_pressed("run"):
@@ -58,6 +78,8 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_released("crouch"):
 		is_crouching = false
 	crouch()
+	if event.is_action_pressed("damage_temp"):
+		change_health(-30)
 
 func crouch():
 	if is_crouching:
@@ -71,6 +93,9 @@ func _physics_process(delta: float) -> void:
 	if !can_control: 
 		handle_death()
 		return
+	
+	#Handle Health Set
+	healthset()
 	
 	if is_on_floor():
 		is_jumping = false
@@ -138,6 +163,9 @@ func coyote_timeout():
 
 func handle_death():
 	velocity.y = 300
-	print("died")
+	health_bar.visible = false
 	animator.play("die")
 	await get_tree().create_timer(1.1).timeout
+	if get_tree():
+		get_tree().reload_current_scene()
+	health_bar.visible = false

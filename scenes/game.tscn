@@ -13,7 +13,7 @@ size = Vector2(2721.61, 92.0545)
 position = Vector2(-25, 0)
 
 [node name="player" parent="." instance=ExtResource("2_lnu2h")]
-position = Vector2(-294, -31)
+position = Vector2(-122, -193)
 
 [node name="danger" type="Area2D" parent="."]
 position = Vector2(-344, -14)

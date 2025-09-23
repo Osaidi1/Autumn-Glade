@@ -4,19 +4,33 @@ extends CharacterBody2D
 @onready var animator: AnimatedSprite2D = $Animations
 @onready var collision: CollisionShape2D = $Collision
 @onready var health_bar: TextureProgressBar = $HealthBar
+@onready var coyote_timer: Timer = $coyote_timer
+@onready var ladder_cast: RayCast2D = $LadderCheck
 
-const JUMP_VELOCITY = -200
-const walk_speed = 45
-const run_speed = 120
+
+@export var Coyote_Time = 0.2
+@export var Jump_Velocity = -210
+@export var Walk_Speed = 45
+@export var Run_Speed = 120
+@export var Health = 100
+@export var jump_buffer_timer = 0.1
+@export var climb_speed = -200
+
+const IDLE = preload("res://collisions/idle.tres")
+const CROUTCHSLIDE = preload("res://collisions/croutchslide.tres")
+
+var is_falling = false
+var can_climb = false
 var is_crouching = false
+var is_climbing = false
 var can_crouch = true
 var can_attack = true
 var jump_available = true
 var is_attacking = false
+var is_jumping = false
 var speed = 45
 const gravity = 9.8
 var dir
-var health = 100
 var main_sm : LimboHSM
 
 func _ready():
@@ -24,23 +38,38 @@ func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _unhandled_input(event):
-	if event.is_action_pressed("crouch") and can_crouch and is_on_floor():
-		main_sm.dispatch(&"go_crouch")
-	if event.is_action_pressed("attack") and can_attack:
-		main_sm.dispatch(&"go_attack")
-	if event.is_action_pressed("jump"):
-		main_sm.dispatch(&"go_jump")
+	if !is_falling:
+		if event.is_action_pressed("crouch") and can_crouch:
+			main_sm.dispatch(&"go_crouch")
+		if event.is_action_pressed("attack") and can_attack:
+			main_sm.dispatch(&"go_attack")
+		if !is_crouching and !is_attacking:
+			if event.is_action_pressed("climb up") and can_climb:
+				main_sm.dispatch(&"go_climb")
+			if !is_climbing:
+				if event.is_action_pressed("jump") and jump_available:
+					main_sm.dispatch(&"go_jump")
+					jump_available = false
 
 func _physics_process(delta: float) -> void:
 	#print(main_sm.get_active_state())
 	
+	#Check For Ladder
+	var laddercollider = ladder_cast.get_collider()
+	if laddercollider:
+		can_climb = true
+	else:
+		can_climb = false
+	
+	#Change Variables
 	if is_on_floor():
-		can_crouch = true
 		jump_available = true
 		can_attack = true
+		coyote_timer.stop()
 	if !is_on_floor():
-		can_crouch = false
-		jump_available = false
+		if jump_available:
+			if coyote_timer.is_stopped():
+				coyote_timer.start(Coyote_Time)
 		can_attack = false
 	
 	if is_attacking:
@@ -53,25 +82,32 @@ func _physics_process(delta: float) -> void:
 	if !is_crouching:
 		jump_available = true
 	
+	if is_jumping:
+		can_crouch = false
+	elif !is_jumping:
+		can_crouch = true
+	
+	
+	#Change Speed
 	if Input.is_action_pressed("run"):
-		speed = run_speed
+		speed = Run_Speed
 	else:
-		speed = walk_speed
+		speed = Walk_Speed
 	
 	#Handle Health
-	health_bar.init_health(health)
+	health_bar.init_health(Health)
 	
 	# Get Direction
 	dir = Input.get_action_strength("right") - Input.get_action_strength("left")
 	#Move
 	if dir:
 		velocity.x = dir * speed
-	#Inertia
 	else:
 		velocity.x = move_toward(velocity.x, 0 , 2000 * delta)
 			
 	#Gravity
-	velocity.y += gravity
+	if !Input.is_action_pressed("climb up"):
+		velocity.y += gravity
 	
 	#Face Correct Direction
 	facing_dir()
@@ -79,13 +115,20 @@ func _physics_process(delta: float) -> void:
 	if !is_attacking and !is_crouching:
 		move_and_slide()
 
+func Coyote_Timer() -> void:
+	jump_available = false 
+
 func facing_dir():
-	if dir < 0:
-		animator.flip_h = true
-		collision.position.x = -5
-	if dir > 0:
-		animator.flip_h = false
-		collision.position.x = 0
+	if !is_attacking and !is_climbing:
+		if dir < 0:
+			animator.flip_h = true
+			collision.position.x = -5
+		if dir > 0:
+			animator.flip_h = false
+			collision.position.x = 0
+
+func coyote_timeout():
+	pass
 
 func initate_state_machine():
 	main_sm = LimboHSM.new()
@@ -139,30 +182,30 @@ func initate_state_machine():
 
 func idle_start():
 	animator.play("idle")
-	print("in idle")
 
 func idle_process(_delta: float):
-	if velocity.y < 0 and !is_on_floor():
-		main_sm.dispatch(&"fall")
-	elif dir != 0:
-		if Input.is_action_pressed("run"):
-			main_sm.dispatch(&"go_run")
-		else:
-			main_sm.dispatch(&"go_walk")
+	if !is_falling:
+		if velocity.y < 0 and !is_on_floor():
+			main_sm.dispatch(&"go_fall")
+		elif dir != 0:
+			if Input.is_action_pressed("run"):
+				main_sm.dispatch(&"go_run")
+			else:
+				main_sm.dispatch(&"go_walk")
 
 # WALK
 
 func walk_start():
 	animator.play("walk")
-	print("in walk")
 
 func walk_process(_delta: float):
-	if velocity.y < 0 and !is_on_floor():
-		main_sm.dispatch(&"fall")
-	elif Input.is_action_pressed("run"):
-		main_sm.dispatch(&"go_run")
-	elif dir == 0:
-		main_sm.dispatch(&"state_ended")
+	if !is_falling:
+		if velocity.y < 0 and !is_on_floor():
+			main_sm.dispatch(&"go_fall")
+		elif Input.is_action_pressed("run"):
+			main_sm.dispatch(&"go_run")
+		elif dir == 0:
+			main_sm.dispatch(&"state_ended")
 
 # RUN
 
@@ -170,26 +213,30 @@ func run_start():
 	animator.play("run")
 
 func run_process(_delta: float):
-	if velocity.y < 0 and !is_on_floor():
-		main_sm.dispatch(&"fall")
-	elif Input.is_action_just_released("run"):
-		if dir != 0:
-			main_sm.dispatch(&"go_walk")
-		else:
+	if !is_falling:
+		if velocity.y < 0 and !is_on_floor():
+			main_sm.dispatch(&"go_fall")
+		elif Input.is_action_just_released("run"):
+			if dir != 0:
+				main_sm.dispatch(&"go_walk")
+			else:
+				main_sm.dispatch(&"state_ended")
+		elif dir == 0:
 			main_sm.dispatch(&"state_ended")
-	elif dir == 0:
-		main_sm.dispatch(&"state_ended")
 
 # JUMP
 
 func jump_start():
 	animator.play("jump")
-	velocity.y = JUMP_VELOCITY
+	is_jumping = true
+	jump_available = false
+	velocity.y = Jump_Velocity
 
 func jump_process(_delta: float):
 	if Input.is_action_just_released("jump") and !jump_available:
 		velocity.y *= 0.4
 	if is_on_floor():
+		is_jumping = false
 		if Input.is_action_pressed("run") and dir != 0:
 			main_sm.dispatch(&"go_run")
 		elif dir != 0:
@@ -201,9 +248,11 @@ func jump_process(_delta: float):
 
 func fall_start():
 	animator.play("fall")
+	is_falling = true
 
 func fall_process(_delta: float):
 	if is_on_floor():
+		is_falling = false
 		if Input.is_action_pressed("run") and dir != 0:
 			main_sm.dispatch(&"go_run")
 		elif dir != 0:
@@ -242,28 +291,54 @@ func slide_process(_delta: float):
 func crouch_start():
 	if !is_on_floor(): return
 	is_crouching = true
+	collision.shape = CROUTCHSLIDE
+	collision.position.y += 4.5
 	animator.play("crouch")
 
 func crouch_process(_delta: float):
 	if Input.is_action_pressed("crouch"):
 		return
-	if Input.is_action_pressed("run") and dir != 0:
-		is_crouching = false
-		main_sm.dispatch(&"go_run")
-	elif dir != 0:
-		is_crouching = false
-		main_sm.dispatch(&"go_walk")
-	else:
-		is_crouching = false
-		main_sm.dispatch(&"state_ended")
+	if Input.is_action_just_released("crouch"):
+		collision.shape = IDLE
+		collision.position.y = 0
+	if !is_falling:
+		if Input.is_action_pressed("run") and dir != 0:
+			is_crouching = false
+			main_sm.dispatch(&"go_run")
+		elif dir != 0:
+			is_crouching = false
+			main_sm.dispatch(&"go_walk")
+		else:
+			is_crouching = false
+			main_sm.dispatch(&"state_ended")
 
 # CLIMB
 
 func climb_start():
-	pass
+	animator.play("climb up")
+	is_climbing = true
 
-func climb_process(_delta: float):
-	pass
+func climb_process(delta: float):
+	var updowndir = Input.get_axis("climb up", "climb down")
+	if is_climbing and is_on_floor():
+		is_climbing = false
+	if is_climbing:
+		velocity.y = updowndir * climb_speed * delta
+		move_and_slide()
+	if Input.is_action_just_released("climb up") or Input.is_action_just_released("climb down") or !can_climb:
+		if velocity.y > 0 and !is_on_floor():
+			main_sm.dispatch(&"go_fall")
+			is_climbing = false
+		elif Input.is_action_just_released("run"):
+			if dir != 0:
+				main_sm.dispatch(&"go_walk")
+				is_climbing = false
+			else:
+				main_sm.dispatch(&"state_ended")
+				is_climbing = false
+		elif dir == 0:
+			main_sm.dispatch(&"state_ended")
+			is_climbing = false
 
 # HEAL
 

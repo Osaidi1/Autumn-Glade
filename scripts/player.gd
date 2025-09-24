@@ -3,8 +3,9 @@ extends CharacterBody2D
 
 @onready var animator: AnimatedSprite2D = $Animations
 @onready var collision: CollisionShape2D = $Collision
-@onready var health_bar: TextureProgressBar = $HealthBar
 @onready var coyote_timer: Timer = $coyote_timer
+@onready var health_bar: TextureProgressBar = $"Game Screen/HealthBar"
+
 
 @export var Coyote_Time = 0.2
 @export var Jump_Velocity = -210

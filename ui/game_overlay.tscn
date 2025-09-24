@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://dart72faab5em"]
+
+[ext_resource type="PackedScene" uid="uid://c5lcqxpcj4ytd" path="res://scenes/health_bar.tscn" id="1_sr1iy"]
+[ext_resource type="Texture2D" uid="uid://c2b8xwp8ni8bw" path="res://assets/BottleUI.png" id="2_wriux"]
+
+[node name="Game Screen" type="CanvasLayer"]
+
+[node name="HealthBar" parent="." instance=ExtResource("1_sr1iy")]
+offset_left = -1809.0
+offset_top = 954.0
+offset_right = -1745.0
+offset_bottom = 964.0
+scale = Vector2(5.96, 5.96)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_left = 1782.0
+offset_top = 894.0
+offset_right = 1822.0
+offset_bottom = 934.0
+scale = Vector2(1.53999, 3.06115)
+texture = ExtResource("2_wriux")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 1717.0
+offset_top = 874.0
+offset_right = 1757.0
+offset_bottom = 897.0
+scale = Vector2(3.28, 3.28)
+text = "x0"

@@ -1,10 +1,8 @@
-[gd_scene load_steps=137 format=3 uid="uid://bwtd6vqtcsd3o"]
+[gd_scene load_steps=135 format=3 uid="uid://bwtd6vqtcsd3o"]
 
 [ext_resource type="Script" uid="uid://byyb5gvlr3ma1" path="res://scripts/player.gd" id="1_oprun"]
 [ext_resource type="Texture2D" uid="uid://dvlkao6v72gv2" path="res://assets/character/Character Animations.png" id="2_g2els"]
 [ext_resource type="Shape2D" uid="uid://cisrx6umiko0m" path="res://collisions/idle.tres" id="3_tuyoq"]
-[ext_resource type="Texture2D" uid="uid://c2b8xwp8ni8bw" path="res://assets/BottleUI.png" id="5_qlg0r"]
-[ext_resource type="PackedScene" uid="uid://c5lcqxpcj4ytd" path="res://scenes/health_bar.tscn" id="5_tuyoq"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dqkch"]
 atlas = ExtResource("2_g2els")
@@ -1244,6 +1242,12 @@ animations = [{
 [node name="CharacterBody2D" type="CharacterBody2D"]
 collision_layer = 3
 script = ExtResource("1_oprun")
+Coyote_Time = null
+Jump_Velocity = null
+Walk_Speed = null
+Run_Speed = null
+climb_speed = null
+currenthealth = null
 
 [node name="Animations" type="AnimatedSprite2D" parent="."]
 position = Vector2(-3, -2)
@@ -1259,31 +1263,6 @@ limit_bottom = 250
 shape = ExtResource("3_tuyoq")
 
 [node name="coyote_timer" type="Timer" parent="."]
-
-[node name="Game Screen" type="CanvasLayer" parent="."]
-
-[node name="HealthBar" parent="Game Screen" instance=ExtResource("5_tuyoq")]
-offset_left = -1809.0
-offset_top = 954.0
-offset_right = -1745.0
-offset_bottom = 964.0
-scale = Vector2(5.96, 5.96)
-
-[node name="TextureRect" type="TextureRect" parent="Game Screen"]
-offset_left = 1748.0
-offset_top = 891.0
-offset_right = 1788.0
-offset_bottom = 931.0
-scale = Vector2(1.53999, 3.06115)
-texture = ExtResource("5_qlg0r")
-
-[node name="Label" type="Label" parent="Game Screen"]
-offset_left = 1677.0
-offset_top = 852.0
-offset_right = 1717.0
-offset_bottom = 875.0
-scale = Vector2(4.36, 4.36)
-text = "x0"
 
 [connection signal="animation_finished" from="Animations" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="coyote_timer" to="." method="Coyote_Timer"]

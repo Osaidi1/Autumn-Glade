@@ -1,7 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://bmt8wcttu8m2h"]
+[gd_scene load_steps=4 format=3 uid="uid://bmt8wcttu8m2h"]
 
 [ext_resource type="Texture2D" uid="uid://dlq0apcfj2pk" path="res://assets/autumn woods/oak_woods_tileset.png" id="1_nnsk1"]
-[ext_resource type="Texture2D" uid="uid://b7y1l1la2x2sw" path="res://assets/wood_set/ladder/28x128/1.png" id="2_mi8v4"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rwgxs"]
 texture = ExtResource("1_nnsk1")
@@ -814,23 +813,11 @@ texture = ExtResource("1_nnsk1")
 30:21/0 = 0
 30:21/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_mi8v4"]
-texture = ExtResource("2_mi8v4")
-0:0/0 = 0
-0:0/0/physics_layer_1/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
-0:1/0 = 0
-0:1/0/physics_layer_1/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
-0:2/0 = 0
-0:2/0/physics_layer_1/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
-0:3/0 = 0
-0:3/0/physics_layer_1/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
-
 [sub_resource type="TileSet" id="TileSet_4wyf3"]
 physics_layer_0/collision_layer = 1
 physics_layer_1/collision_layer = 2
 physics_layer_1/collision_mask = 2
 sources/0 = SubResource("TileSetAtlasSource_rwgxs")
-sources/2 = SubResource("TileSetAtlasSource_mi8v4")
 
 [node name="TileMap" type="TileMap"]
 position = Vector2(-40, 64)

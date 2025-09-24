@@ -2,7 +2,6 @@ extends Area2D
 
 @onready var player1: Player = $"../player"
 @onready var player: Player = $"../player"
-@onready var timer: Timer = $Timer
 
 #Body has entered area
 func _on_body_entered(body):

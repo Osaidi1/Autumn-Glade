@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://cbkurd17oqso4" path="res://assets/bottle for health.png" id="2_vveut"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q1l34"]
-size = Vector2(20, 25)
+size = Vector2(10, 18)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_q1l34"]
 atlas = ExtResource("2_vveut")
@@ -87,7 +87,6 @@ atlas = ExtResource("2_vveut")
 region = Rect2(171, 0, 9, 18)
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_vveut"]
-load_path = "res://.godot/imported/poção vermelha.png-9a1b4e1dd5d59cd5b346a0d7ba7b6884.ctex"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fdio7"]
 atlas = SubResource("CompressedTexture2D_vveut")
@@ -224,7 +223,7 @@ collision_mask = 2
 script = ExtResource("1_vveut")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(8.94069e-07, -2.5)
+position = Vector2(2.38419e-07, 0)
 shape = SubResource("RectangleShape2D_q1l34")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]

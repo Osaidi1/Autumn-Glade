@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://1ffj4pyi4mtr"]
+[gd_scene load_steps=7 format=3 uid="uid://1ffj4pyi4mtr"]
 
 [ext_resource type="PackedScene" uid="uid://bmt8wcttu8m2h" path="res://scenes/ground.tscn" id="1_yqjtg"]
 [ext_resource type="PackedScene" uid="uid://bwtd6vqtcsd3o" path="res://scenes/player.tscn" id="2_lnu2h"]
 [ext_resource type="Script" uid="uid://bxp64knk6fkrh" path="res://scripts/danger zone.gd" id="3_lnu2h"]
 [ext_resource type="PackedScene" uid="uid://68qwpubtdomh" path="res://scenes/health_bottle.tscn" id="4_lbhrr"]
+[ext_resource type="PackedScene" uid="uid://bh60e7xm06k84" path="res://scenes/theif_enemy.tscn" id="5_iywne"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lbhrr"]
 size = Vector2(2721.61, 92.0545)
@@ -14,7 +15,8 @@ size = Vector2(2721.61, 92.0545)
 position = Vector2(-25, 0)
 
 [node name="player" parent="." instance=ExtResource("2_lnu2h")]
-position = Vector2(-209, -62)
+position = Vector2(-479, -63)
+scale = Vector2(1.1, 1.1)
 
 [node name="danger" type="Area2D" parent="."]
 position = Vector2(-344, -14)
@@ -28,6 +30,32 @@ scale = Vector2(0.730818, 1.0359)
 shape = SubResource("RectangleShape2D_lbhrr")
 
 [node name="Potion" parent="." instance=ExtResource("4_lbhrr")]
-position = Vector2(-294, -5)
+position = Vector2(-69, -5)
+
+[node name="Potion2" parent="." instance=ExtResource("4_lbhrr")]
+position = Vector2(-81, -5)
+
+[node name="Potion3" parent="." instance=ExtResource("4_lbhrr")]
+position = Vector2(-94, -5)
+
+[node name="Potion4" parent="." instance=ExtResource("4_lbhrr")]
+position = Vector2(-106, -4)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -385.0
+offset_top = -164.0
+offset_right = -222.0
+offset_bottom = -11.0
+text = "WASD to move, 
+Right Click to attack,
+Left Click to Block,
+Press R to get hurt, 
+Press E to Heal and
+Shift to Run"
+
+[node name="TheifEnemy" parent="." node_paths=PackedStringArray("player") instance=ExtResource("5_iywne")]
+position = Vector2(-645, -47)
+scale = Vector2(0.9, 0.9)
+player = NodePath("../player")
 
 [connection signal="body_entered" from="danger" to="danger" method="_on_body_entered"]
